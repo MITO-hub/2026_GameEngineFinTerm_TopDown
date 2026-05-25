@@ -5,13 +5,49 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+
+    public TMP_Text timeText;
+    public TMP_Text coinText;
+
+    private int coinCount = 0;
+
+    private float playTime = 0f;
+    private bool isPlaying = true;
+
     public TMP_InputField inputField;
     public Button gameStartButton;
+
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
         gameStartButton.onClick.AddListener(OnGameStartButtonClicked);
+
+        UpdateCoinUI();
+        UpdateCoinUI();
+    }
+
+    void Update()
+    {
+        if (!isPlaying)
+            return;
+
+        playTime += Time.deltaTime;
+        UpdateTimeUI();
+    }
+
+    private void UpdateTimeUI()
+    {
+        if (timeText != null)
+        {
+            timeText.text = "Time: " + playTime.ToString("F2");
+        }
     }
 
     private void OnGameStartButtonClicked()
@@ -26,13 +62,47 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetString("PlayerName", playerName);
         PlayerPrefs.Save();
 
-        Debug.Log("플레이어 이름 저장됨: " +  playerName);
+        Debug.Log("플레이어 이름 저장됨: " + playerName);
 
         SceneManager.LoadScene("Level_1");
     }
-    // Update is called once per frame
-    void Update()
+
+    public void ClearStage()
     {
-        
+        isPlaying = false;
+
+        Debug.Log("스테이지 클리어!");
+        Debug.Log("클리어 시간: " + playTime.ToString("F2") + "초");
+        Debug.Log("획득 코인: " + coinCount);
+    }
+
+    public void PlayerDead()
+    {
+        isPlaying = false;
+
+        Debug.Log("플레이어 사망. 스테이지 재시작");
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public float GetPlayTime()
+    {
+        return playTime;
+    }
+
+    public void AddCoin(int amount)
+    {
+        coinCount += amount;
+        UpdateCoinUI();
+    }
+
+    private void UpdateCoinUI()
+    {
+        coinText.text = "Coin: " + coinCount;
+    }
+
+    public int GetCoinCount()
+    {
+        return coinCount;
     }
 }

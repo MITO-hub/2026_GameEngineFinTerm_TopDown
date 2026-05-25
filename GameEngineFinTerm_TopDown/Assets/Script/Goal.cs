@@ -6,7 +6,7 @@ public class Goal : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            Debug.Log("스테이지 클리어");
+            GameManager.Instance.ClearStage();
         }
     }
 }
