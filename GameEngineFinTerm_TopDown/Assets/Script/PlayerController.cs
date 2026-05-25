@@ -1,22 +1,28 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
+
     public Sprite[] spriteUp;
     public Sprite[] spriteDown;
-    public Sprite[] spriteleft;
+    public Sprite[] spriteLeft;
     public Sprite[] spriteRight;
+
     public float frameTime = 0.15f;
+
     private Rigidbody2D rb;
     private SpriteRenderer sr;
+
     private Vector2 input;
     private Vector2 velocity;
+
     private Sprite[] currentSprites;
     private int frameIndex = 0;
     private float timer = 0f;
+
+    private bool canMove = true;
 
     private void Awake()
     {
@@ -29,6 +35,13 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputValue value)
     {
+        if (!canMove)
+        {
+            input = Vector2.zero;
+            velocity = Vector2.zero;
+            return;
+        }
+
         input = value.Get<Vector2>();
         velocity = input.normalized * moveSpeed;
 
@@ -39,7 +52,7 @@ public class PlayerController : MonoBehaviour
                 if (input.x > 0)
                     ChangeSprites(spriteRight);
                 else
-                    ChangeSprites(spriteleft);
+                    ChangeSprites(spriteLeft);
             }
             else
             {
@@ -53,6 +66,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (!canMove)
+            return;
+
         if (input.sqrMagnitude <= 0.01f)
         {
             frameIndex = 0;
@@ -76,6 +92,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!canMove)
+            return;
+
         rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
     }
 
@@ -88,5 +107,16 @@ public class PlayerController : MonoBehaviour
         frameIndex = 0;
         timer = 0f;
         sr.sprite = currentSprites[frameIndex];
+    }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+
+        if (!canMove)
+        {
+            input = Vector2.zero;
+            velocity = Vector2.zero;
+        }
     }
 }
