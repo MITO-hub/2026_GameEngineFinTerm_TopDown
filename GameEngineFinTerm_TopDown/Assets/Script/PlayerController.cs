@@ -3,65 +3,47 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float forwardSpeed = 5f;
+    public float verticalSpeed = 4f;
 
-    public Sprite[] spriteUp;
-    public Sprite[] spriteDown;
-    public Sprite[] spriteLeft;
-    public Sprite[] spriteRight;
+    public Sprite[] walkSprites;
+    public Sprite jumpSprite;
 
     public float frameTime = 0.15f;
 
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
-    private Vector2 input;
+    private float verticalInput;
     private Vector2 velocity;
 
-    private Sprite[] currentSprites;
     private int frameIndex = 0;
     private float timer = 0f;
 
     private bool canMove = true;
+    private bool isJumping = false;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
 
-        currentSprites = spriteDown;
-        sr.sprite = currentSprites[0];
+       if (walkSprites.Length > 0)
+        {
+            sr.sprite = walkSprites[0];
+        }
     }
 
     public void OnMove(InputValue value)
     {
         if (!canMove)
         {
-            input = Vector2.zero;
-            velocity = Vector2.zero;
+            verticalInput = 0f;
             return;
         }
 
-        input = value.Get<Vector2>();
-        velocity = input.normalized * moveSpeed;
-
-        if (input.sqrMagnitude > 0.01f)
-        {
-            if (Mathf.Abs(input.x) >= Mathf.Abs(input.y))
-            {
-                if (input.x > 0)
-                    ChangeSprites(spriteRight);
-                else
-                    ChangeSprites(spriteLeft);
-            }
-            else
-            {
-                if (input.y > 0)
-                    ChangeSprites(spriteUp);
-                else
-                    ChangeSprites(spriteDown);
-            }
-        }
+        Vector2 input = value.Get<Vector2>();
+        verticalInput = input.y;
     }
 
     private void Update()
@@ -69,12 +51,30 @@ public class PlayerController : MonoBehaviour
         if (!canMove)
             return;
 
-        if (input.sqrMagnitude <= 0.01f)
+        if (isJumping)
         {
-            frameIndex = 0;
-            sr.sprite = currentSprites[frameIndex];
+            if (jumpSprite != null)
+                sr.sprite = jumpSprite;
+
             return;
         }
+
+        PlayWalkAnimation();
+    }
+
+    private void FixedUpdate()
+    {
+        if (!canMove)
+            return;
+
+        velocity = new Vector2(forwardSpeed, verticalInput * verticalSpeed);
+        rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
+    }
+
+    private void PlayWalkAnimation()
+    {
+        if (walkSprites.Length == 0)
+            return;
 
         timer += Time.deltaTime;
 
@@ -83,30 +83,11 @@ public class PlayerController : MonoBehaviour
             timer = 0f;
             frameIndex++;
 
-            if (frameIndex >= currentSprites.Length)
+            if (frameIndex >= walkSprites.Length)
                 frameIndex = 0;
 
-            sr.sprite = currentSprites[frameIndex];
+            sr.sprite = walkSprites[frameIndex];
         }
-    }
-
-    private void FixedUpdate()
-    {
-        if (!canMove)
-            return;
-
-        rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
-    }
-
-    private void ChangeSprites(Sprite[] newSprites)
-    {
-        if (currentSprites == newSprites)
-            return;
-
-        currentSprites = newSprites;
-        frameIndex = 0;
-        timer = 0f;
-        sr.sprite = currentSprites[frameIndex];
     }
 
     public void SetCanMove(bool value)
@@ -115,8 +96,18 @@ public class PlayerController : MonoBehaviour
 
         if (!canMove)
         {
-            input = Vector2.zero;
+            verticalInput = 0f;
             velocity = Vector2.zero;
+        }
+    }
+
+    public void SetJumping(bool value)
+    {
+        isJumping = value;
+
+        if (isJumping && jumpSprite != null)
+        {
+            sr.sprite = jumpSprite;
         }
     }
 }

@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
     public TMP_Text coinText;
 
     private int coinCount = 0;
-
     private float playTime = 0f;
     private bool isPlaying = true;
 
@@ -22,6 +21,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        Time.timeScale = 1f;                                                //
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -50,6 +50,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void UpdateCoinUI()
+    {
+        if (coinText != null)
+            coinText.text = "Coin: " + coinCount;
+    }
+
     private void OnGameStartButtonClicked()
     {
         string playerName = inputField.text;
@@ -71,6 +77,14 @@ public class GameManager : MonoBehaviour
     {
         isPlaying = false;
 
+        PlayerController player = FindObjectOfType<PlayerController>();     //
+        if (player != null)                                                 //
+        {
+            player.SetCanMove(false);                                       //
+        }
+
+        Time.timeScale = 0f;
+
         Debug.Log("스테이지 클리어!");
         Debug.Log("클리어 시간: " + playTime.ToString("F2") + "초");
         Debug.Log("획득 코인: " + coinCount);
@@ -79,6 +93,8 @@ public class GameManager : MonoBehaviour
     public void PlayerDead()
     {
         isPlaying = false;
+
+        Time.timeScale = 1f;                                                //
 
         Debug.Log("플레이어 사망. 스테이지 재시작");
 
@@ -94,11 +110,6 @@ public class GameManager : MonoBehaviour
     {
         coinCount += amount;
         UpdateCoinUI();
-    }
-
-    private void UpdateCoinUI()
-    {
-        coinText.text = "Coin: " + coinCount;
     }
 
     public int GetCoinCount()

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   stageName: Stage 1 Easy
   stageNumber: 1
-  coinCount: 5
-  obstacleCount: 3
+  coinCount: 3
+  obstacleCount: 9
   timeLimit: 60
   playerStartPosition: {x: 0, y: 0}
   goalPosition: {x: 8, y: 0}
