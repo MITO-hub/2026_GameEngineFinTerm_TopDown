@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class GameManager : MonoBehaviour
     public TMP_InputField inputField;
     public Button gameStartButton;
 
+    public int currentStageNumber = 1;
+    private PlayerSaveData SaveData;
+
 
     private void Awake()
     {
@@ -28,6 +32,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         gameStartButton.onClick.AddListener(OnGameStartButtonClicked);
+
+        SaveData = SaveManager.Load();
 
         UpdateCoinUI();
         UpdateCoinUI();
@@ -83,6 +89,8 @@ public class GameManager : MonoBehaviour
             player.SetCanMove(false);                                       //
         }
 
+        CheckBestTime();
+
         Time.timeScale = 0f;
 
         Debug.Log("스테이지 클리어!");
@@ -90,6 +98,43 @@ public class GameManager : MonoBehaviour
         Debug.Log("획득 코인: " + coinCount);
     }
 
+    public void CheckBestTime()
+    {
+        if (SaveData == null)
+        {
+            SaveData = SaveManager.Load();
+        }
+
+        if (currentStageNumber == 1)
+        {
+            if (SaveData.stage1BestTime == 0f || playTime < SaveData.stage1BestTime)
+            {
+                SaveData.stage1BestTime = playTime;
+                SaveManager.Save(SaveData);
+                Debug.Log("1 스테이지 최고 기록 갱신!");
+            }
+        }
+
+        else if (currentStageNumber == 2)
+        {
+            if (SaveData.stage2BestTime == 0f || playTime < SaveData.stage2BestTime)
+            {
+                SaveData.stage2BestTime = playTime;
+                SaveManager.Save(SaveData);
+                Debug.Log("2 스테이지 최고 기록 갱신!");
+            }
+        }
+
+        else if (currentStageNumber == 3)
+        {
+            if (SaveData.stage3BestTime == 0f || playTime < SaveData.stage3BestTime)
+            {
+                SaveData.stage3BestTime = playTime;
+                SaveManager.Save(SaveData);
+                Debug.Log("3 스테이지 최고 기록 갱신!");
+            }
+        }
+    }
     public void PlayerDead()
     {
         isPlaying = false;
