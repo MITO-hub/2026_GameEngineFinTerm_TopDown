@@ -1,8 +1,9 @@
+using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting.Antlr3.Runtime;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
     public Button gameStartButton;
 
     public int currentStageNumber = 1;
-    private PlayerSaveData SaveData;
+    private PlayerSaveData saveData;
 
 
     private void Awake()
@@ -33,7 +34,7 @@ public class GameManager : MonoBehaviour
     {
         gameStartButton.onClick.AddListener(OnGameStartButtonClicked);
 
-        SaveData = SaveManager.Load();
+        saveData = SaveManager.Load();
 
         UpdateCoinUI();
         UpdateCoinUI();
@@ -76,20 +77,21 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("플레이어 이름 저장됨: " + playerName);
 
-        SceneManager.LoadScene("Level_1");
+        SceneManager.LoadScene("Stage1Scene");
     }
 
     public void ClearStage()
     {
         isPlaying = false;
 
-        PlayerController player = FindObjectOfType<PlayerController>();     //
-        if (player != null)                                                 //
+        PlayerController player = FindObjectOfType<PlayerController>();
+        if (player != null)
         {
-            player.SetCanMove(false);                                       //
+            player.SetCanMove(false);
         }
 
         CheckBestTime();
+        SaveStageClear();
 
         Time.timeScale = 0f;
 
@@ -100,41 +102,65 @@ public class GameManager : MonoBehaviour
 
     public void CheckBestTime()
     {
-        if (SaveData == null)
+        if (saveData == null)
         {
-            SaveData = SaveManager.Load();
+            saveData = SaveManager.Load();
         }
 
         if (currentStageNumber == 1)
         {
-            if (SaveData.stage1BestTime == 0f || playTime < SaveData.stage1BestTime)
+            if (saveData.stage1BestTime == 0f || playTime < saveData.stage1BestTime)
             {
-                SaveData.stage1BestTime = playTime;
-                SaveManager.Save(SaveData);
+                saveData.stage1BestTime = playTime;
+                SaveManager.Save(saveData);
                 Debug.Log("1 스테이지 최고 기록 갱신!");
             }
         }
 
         else if (currentStageNumber == 2)
         {
-            if (SaveData.stage2BestTime == 0f || playTime < SaveData.stage2BestTime)
+            if (saveData.stage2BestTime == 0f || playTime < saveData.stage2BestTime)
             {
-                SaveData.stage2BestTime = playTime;
-                SaveManager.Save(SaveData);
+                saveData.stage2BestTime = playTime;
+                SaveManager.Save(saveData);
                 Debug.Log("2 스테이지 최고 기록 갱신!");
             }
         }
 
         else if (currentStageNumber == 3)
         {
-            if (SaveData.stage3BestTime == 0f || playTime < SaveData.stage3BestTime)
+            if (saveData.stage3BestTime == 0f || playTime < saveData.stage3BestTime)
             {
-                SaveData.stage3BestTime = playTime;
-                SaveManager.Save(SaveData);
+                saveData.stage3BestTime = playTime;
+                SaveManager.Save(saveData);
                 Debug.Log("3 스테이지 최고 기록 갱신!");
             }
         }
     }
+
+    private void SaveStageClear()
+    {
+        if (saveData == null)
+        {
+            saveData = SaveManager.Load();
+        }
+
+        if (currentStageNumber == 1)
+        {
+            saveData.stage1Cleared = true;
+        }
+        else if (currentStageNumber == 2)
+        {
+            saveData.stage2Cleared = true;
+        }
+        else if (currentStageNumber == 3)
+        {
+            saveData.stage3Cleared = true;
+        }
+
+        SaveManager.Save(saveData);
+    }
+
     public void PlayerDead()
     {
         isPlaying = false;
