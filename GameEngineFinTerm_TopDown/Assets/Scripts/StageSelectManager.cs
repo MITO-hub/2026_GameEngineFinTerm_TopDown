@@ -18,7 +18,9 @@ public class StageSelectManager : MonoBehaviour
 
     private void Start()
     {
-        saveData = SaveManager.Load();
+        string playerName = PlayerPrefs.GetString("CurrentPlayerName", "Player");
+
+        saveData = SaveManager.Load(playerName);
 
         UpdateStageButtons();
     }

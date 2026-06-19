@@ -114,7 +114,9 @@ public class UIManager : MonoBehaviour
 
     private void UpdateRankingUI()
     {
-        PlayerSaveData data = SaveManager.Load();
+        string playerName = PlayerPrefs.GetString("CurrentPlayerName", "Player");
+
+        PlayerSaveData data = SaveManager.Load(playerName);
 
         stage1RankText.text = data.playerName + " / Stage 1 최고 기록: " + FormatBestTime(data.stage1BestTime);
         stage2RankText.text = data.playerName + " / Stage 2 최고 기록: " + FormatBestTime(data.stage2BestTime);
@@ -131,19 +133,21 @@ public class UIManager : MonoBehaviour
 
     public void StartGame()
     {
-        PlayerSaveData data = SaveManager.Load();
+        string inputName = playerNameInput.text;
 
-    string inputName = playerNameInput.text;
+        if (string.IsNullOrWhiteSpace(inputName))
+        {
+            Debug.Log("플레이어 이름을 입력하세요.");
+            return;
+        }
 
-    if (string.IsNullOrWhiteSpace(inputName))
-    {
-        inputName = "Player";
-    }
+        PlayerPrefs.SetString("CurrentPlayerName", inputName);
+        PlayerPrefs.Save();
 
-    data.playerName = inputName;
+        PlayerSaveData data = SaveManager.Load(inputName);
+        data.playerName = inputName;
+        SaveManager.Save(data);
 
-    SaveManager.Save(data);
-
-    SceneManager.LoadScene("StageSelectScene");
+        SceneManager.LoadScene("StageSelectScene");
     }
 }

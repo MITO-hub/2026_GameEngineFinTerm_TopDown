@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class TitleManager : MonoBehaviour
+public class RankingManager : MonoBehaviour
 {
     public TMP_InputField nameInputField;
 
@@ -11,7 +11,7 @@ public class TitleManager : MonoBehaviour
 
     public TMP_Text recordText;
 
-    public string gameSceneName = "GameScene";
+    public string stageSelectSceneName = "StageSelectScene";
 
     private PlayerSaveData saveData;
 
@@ -19,11 +19,11 @@ public class TitleManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        saveData = SaveManager.Load();
+        string currentPlayerName = PlayerPrefs.GetString("CurrentPlayerName", "");
 
         if (nameInputField != null)
         {
-            nameInputField.text = saveData.playerName;
+            nameInputField.text = currentPlayerName;
         }
 
         if (helpPanel != null)
@@ -35,18 +35,21 @@ public class TitleManager : MonoBehaviour
 
     public void StartGame()
     {
-        if (nameInputField != null && nameInputField.text != "")
+        string playerName = "Player";
+
+        if (nameInputField != null && !string.IsNullOrWhiteSpace(nameInputField.text))
         {
-            saveData.playerName = nameInputField.text;
-        }
-        else
-        {
-            saveData.playerName = "Player";
+            playerName = nameInputField.text;
         }
 
+        PlayerPrefs.SetString("CurrentPlayerName", playerName);
+        PlayerPrefs.Save();
+
+        saveData = SaveManager.Load(playerName);
+        saveData.playerName = playerName;
         SaveManager.Save(saveData);
 
-        SceneManager.LoadScene(gameSceneName);
+        SceneManager.LoadScene(stageSelectSceneName);
     }
 
     public void OpenHelpPanel()
@@ -63,7 +66,9 @@ public class TitleManager : MonoBehaviour
 
     public void OpenRecordPanel()
     {
-        saveData = SaveManager.Load();
+        string playerName = GetCurrentInputName();
+
+        saveData = SaveManager.Load(playerName);
 
         if (recordPanel != null)
             recordPanel.SetActive(true);
@@ -72,9 +77,9 @@ public class TitleManager : MonoBehaviour
         {
             recordText.text =
                 "플레이어 이름: " + saveData.playerName + "\n\n" +
-                "1스테이지 최고 기록: " + GetTimeText(saveData.stage1BestTime) + "\n" +
-                "2스테이지 최고 기록: " + GetTimeText(saveData.stage2BestTime) + "\n" +
-                "3스테이지 최고 기록: " + GetTimeText(saveData.stage3BestTime);
+                "쉬움 스테이지 최고 기록: " + GetTimeText(saveData.stage1BestTime) + "\n" +
+                "보통 스테이지 최고 기록: " + GetTimeText(saveData.stage2BestTime) + "\n" +
+                "어려움 스테이지 최고 기록: " + GetTimeText(saveData.stage3BestTime);
         }
     }
 
@@ -82,6 +87,16 @@ public class TitleManager : MonoBehaviour
     {
         if (recordPanel != null)
             recordPanel.SetActive(false);
+    }
+
+    private string GetCurrentInputName()
+    {
+        if (nameInputField != null && !string.IsNullOrWhiteSpace(nameInputField.text))
+        {
+            return nameInputField.text;
+        }
+
+        return PlayerPrefs.GetString("CurrentPlayerName", "Player");
     }
 
     private string GetTimeText(float time)

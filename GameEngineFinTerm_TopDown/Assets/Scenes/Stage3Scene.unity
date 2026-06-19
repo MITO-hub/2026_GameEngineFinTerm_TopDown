@@ -196,9 +196,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   timeText: {fileID: 1097988546}
   coinText: {fileID: 1593238266}
-  inputField: {fileID: 0}
-  gameStartButton: {fileID: 0}
-  currentStageNumber: 1
+  currentStageNumber: 3
 --- !u!1 &260187148
 GameObject:
   m_ObjectHideFlags: 0

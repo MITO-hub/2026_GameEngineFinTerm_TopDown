@@ -1,9 +1,8 @@
 using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,13 +10,12 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text timeText;
     public TMP_Text coinText;
+    public TMP_Text startCountText;
 
     private int coinCount = 0;
     private float playTime = 0f;
     private bool isPlaying = true;
-
-    public TMP_InputField inputField;
-    public Button gameStartButton;
+    private bool canCountTime = false;
 
     public int currentStageNumber = 1;
     private PlayerSaveData saveData;
@@ -32,17 +30,22 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        gameStartButton.onClick.AddListener(OnGameStartButtonClicked);
+        string playerName = PlayerPrefs.GetString("CurrentPlayerName", "Player");
 
-        saveData = SaveManager.Load();
+        saveData = SaveManager.Load(playerName);
 
         UpdateCoinUI();
-        UpdateCoinUI();
+        UpdateTimeUI();
+
+        StartCoroutine(StartCountdown());
     }
 
     void Update()
     {
         if (!isPlaying)
+            return;
+
+        if (!canCountTime)
             return;
 
         playTime += Time.deltaTime;
@@ -61,23 +64,6 @@ public class GameManager : MonoBehaviour
     {
         if (coinText != null)
             coinText.text = "Coin: " + coinCount;
-    }
-
-    private void OnGameStartButtonClicked()
-    {
-        string playerName = inputField.text;
-        if (string.IsNullOrEmpty(playerName))
-        {
-            Debug.Log("플레이어 이름을 입력하세요.");
-            return;
-        }
-
-        PlayerPrefs.SetString("PlayerName", playerName);
-        PlayerPrefs.Save();
-
-        Debug.Log("플레이어 이름 저장됨: " + playerName);
-
-        SceneManager.LoadScene("Stage1Scene");
     }
 
     public void ClearStage()
@@ -104,7 +90,8 @@ public class GameManager : MonoBehaviour
     {
         if (saveData == null)
         {
-            saveData = SaveManager.Load();
+            string playerName = PlayerPrefs.GetString("CurrentPlayerName", "Player");
+            saveData = SaveManager.Load(playerName);
         }
 
         if (currentStageNumber == 1)
@@ -142,7 +129,8 @@ public class GameManager : MonoBehaviour
     {
         if (saveData == null)
         {
-            saveData = SaveManager.Load();
+            string playerName = PlayerPrefs.GetString("CurrentPlayerName", "Player");
+            saveData = SaveManager.Load(playerName);
         }
 
         if (currentStageNumber == 1)
@@ -186,5 +174,45 @@ public class GameManager : MonoBehaviour
     public int GetCoinCount()
     {
         return coinCount;
+    }
+
+    private IEnumerator StartCountdown()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+
+        if (player != null)
+        {
+            player.SetCanMove(false);
+        }
+
+        if (startCountText != null)
+        {
+            startCountText.gameObject.SetActive(true);
+
+            startCountText.text = "3";
+            yield return new WaitForSecondsRealtime(1f);
+
+            startCountText.text = "2";
+            yield return new WaitForSecondsRealtime(1f);
+
+            startCountText.text = "1";
+            yield return new WaitForSecondsRealtime(1f);
+
+            startCountText.text = "START!";
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            startCountText.gameObject.SetActive(false);
+        }
+        else
+        {
+            yield return new WaitForSecondsRealtime(3f);
+        }
+
+        if (player != null)
+        {
+            player.SetCanMove(true);
+        }
+
+        canCountTime = true;
     }
 }
