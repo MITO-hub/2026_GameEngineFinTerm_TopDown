@@ -59,43 +59,67 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        if (SoundManager.Instance != null)
+        {
+            bgmToggle.isOn = SoundManager.Instance.GetBGMOn();
+            fxToggle.isOn = SoundManager.Instance.GetSFXOn();
+
+            bgmSlider.value = SoundManager.Instance.GetBGMVolume();
+            fxSlider.value = SoundManager.Instance.GetSFXVolume();
+        }
+
         if (panel != null)
             panel.SetActive(false);
-
-        if (rankingPanel != null)
-            rankingPanel.SetActive(false);
     }
 
     private void OnBGMToggleChange(bool isOn)
     {
-        // SoundManager_1.Instance.SetBgmOn(isOn);
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.SetBGMOn(isOn);
+            SoundManager.Instance.PlaySFX(SfxType.Click);
+        }
     }
 
     private void OnFXToggleChange(bool isOn)
     {
-        // SoundManager_1.Instance.SetSfxOn(isOn);
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.SetSFXOn(isOn);
+            SoundManager.Instance.PlaySFX(SfxType.Click);
+        }
     }
 
     private void OnBGMSliderChange(float volume)
     {
-        // SoundManager_1.Instance.SetBgmVolume(volume);
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.SetBGMVolume(volume);
+        }
     }
 
     private void OnFxSliderChange(float volume)
     {
-        // SoundManager_1.Instance.SetSfxVolume(volume);
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.SetSFXVolume(volume);
+        }
     }
 
     private void OpenOptionPanel()
     {
-        if (panel != null)
-            panel.SetActive(true);
+        panel.SetActive(true);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
     }
 
     private void CloseOptionPanel()
     {
-        if (panel != null)
-            panel.SetActive(false);
+        panel.SetActive(false);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
     }
 
     private void OpenRankingPanel()
@@ -104,12 +128,18 @@ public class UIManager : MonoBehaviour
             rankingPanel.SetActive(true);
 
         UpdateRankingUI();
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
     }
 
     private void CloseRankingPanel()
     {
         if (rankingPanel != null)
             rankingPanel.SetActive(false);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
     }
 
     private void UpdateRankingUI()
@@ -149,5 +179,8 @@ public class UIManager : MonoBehaviour
         SaveManager.Save(data);
 
         SceneManager.LoadScene("StageSelectScene");
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
     }
 }

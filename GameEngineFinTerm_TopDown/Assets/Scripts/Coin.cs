@@ -9,6 +9,10 @@ public class Coin : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             GameManager.Instance.AddCoin(value);
+
+            if (SoundManager.Instance != null)
+                SoundManager.Instance.PlaySFX(SfxType.Coin);
+
             Destroy(gameObject);
         }
     }

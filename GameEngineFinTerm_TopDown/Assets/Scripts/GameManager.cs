@@ -84,6 +84,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("스테이지 클리어!");
         Debug.Log("클리어 시간: " + playTime.ToString("F2") + "초");
         Debug.Log("획득 코인: " + coinCount);
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxType.StageClear);
+        }
     }
 
     public void CheckBestTime()
@@ -158,6 +163,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("플레이어 사망. 스테이지 재시작");
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxType.StageFail);
+        }
     }
 
     public float GetPlayTime()
