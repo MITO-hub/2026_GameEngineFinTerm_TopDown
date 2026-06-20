@@ -171,10 +171,12 @@ public class GameManager : MonoBehaviour
         if (currentStageNumber == 1)
         {
             saveData.stage1Cleared = true;
+            saveData.shieldUnlocked = true;
         }
         else if (currentStageNumber == 2)
         {
             saveData.stage2Cleared = true;
+            saveData.dashUnlocked = true;
         }
         else if (currentStageNumber == 3)
         {

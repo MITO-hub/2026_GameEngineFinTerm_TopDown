@@ -684,6 +684,7 @@ MonoBehaviour:
   - {fileID: 2216962988415778236, guid: 4305f999873776243b71f8439153e48b, type: 3}
   - {fileID: -4783177402104371535, guid: 5ca9936af3d44bb4182f8aba1a131f6b, type: 3}
   jumpSprite: {fileID: -2727194386381995188, guid: e16fc242073bcf94cbf6825e0cb65ef5, type: 3}
+  dashPower: 5
   frameTime: 0.2
 --- !u!212 &278414573
 SpriteRenderer:
@@ -27110,6 +27111,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1850764133}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1779143697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1779143699}
+  - component: {fileID: 1779143698}
+  m_Layer: 0
+  m_Name: SkillManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1779143698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779143697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b71c97bb7e3c09b44a4353c143dd7a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillManager
+--- !u!4 &1779143699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779143697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 626.0969, y: 622.74866, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1846688252
 GameObject:
   m_ObjectHideFlags: 0
@@ -27588,3 +27633,4 @@ SceneRoots:
   - {fileID: 1575227584}
   - {fileID: 1589732833}
   - {fileID: 1850764133}
+  - {fileID: 1779143699}

@@ -6,6 +6,16 @@ public class Obstacle : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            if (SkillManager.Instance != null && SkillManager.Instance.CanUseShield())
+            {
+                SkillManager.Instance.UseShield();
+                Destroy(gameObject);
+                return;
+            }
+
+            if (SoundManager.Instance != null)
+                SoundManager.Instance.PlaySFX(SfxType.Hit);
+
             GameManager.Instance.PlayerDead();
         }
     }

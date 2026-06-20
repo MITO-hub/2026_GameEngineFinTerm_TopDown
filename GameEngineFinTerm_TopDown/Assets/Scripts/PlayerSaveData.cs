@@ -10,4 +10,7 @@ public class PlayerSaveData
     public bool stage1Cleared = false;
     public bool stage2Cleared = false;
     public bool stage3Cleared = false;
+
+    public bool shieldUnlocked = false;
+    public bool dashUnlocked = false;
 }

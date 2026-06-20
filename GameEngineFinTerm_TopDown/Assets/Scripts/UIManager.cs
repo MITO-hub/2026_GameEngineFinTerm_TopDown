@@ -27,6 +27,21 @@ public class UIManager : MonoBehaviour
     public TMP_Text stage2RankText;
     public TMP_Text stage3RankText;
 
+    [Header("Skill UI")]
+    public Button skillOpenButton;
+    public Button skillCloseButton;
+
+    public GameObject skillPanel;
+
+    public Button shieldSkillButton;
+    public Button dashSkillButton;
+
+    public TMP_Text shieldLockText;
+    public TMP_Text dashLockText;
+    public TMP_Text selectedSkillText;
+
+    private PlayerSaveData saveData;
+
     [Header("Title UI")]
     public TMP_InputField playerNameInput;
 
@@ -55,6 +70,18 @@ public class UIManager : MonoBehaviour
 
         if (rankingCloseButton != null)
             rankingCloseButton.onClick.AddListener(CloseRankingPanel);
+
+        if (skillOpenButton != null)
+            skillOpenButton.onClick.AddListener(OpenSkillPanel);
+
+        if (skillCloseButton != null)
+            skillCloseButton.onClick.AddListener(CloseSkillPanel);
+
+        if (shieldSkillButton != null)
+            shieldSkillButton.onClick.AddListener(SelectShieldSkill);
+
+        if (dashSkillButton != null)
+            dashSkillButton.onClick.AddListener(SelectDashSkill);
     }
 
     private void Start()
@@ -70,6 +97,9 @@ public class UIManager : MonoBehaviour
 
         if (panel != null)
             panel.SetActive(false);
+
+        if (skillPanel != null)
+            skillPanel.SetActive(false);
     }
 
     private void OnBGMToggleChange(bool isOn)
@@ -182,5 +212,101 @@ public class UIManager : MonoBehaviour
 
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlaySFX(SfxType.Click);
+    }
+
+    private void OpenSkillPanel()
+    {
+        string playerName = PlayerPrefs.GetString("CurrentPlayerName", "Player");
+        saveData = SaveManager.Load(playerName);
+
+        if (skillPanel != null)
+            skillPanel.SetActive(true);
+
+        UpdateSkillUI();
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
+    }
+
+    private void CloseSkillPanel()
+    {
+        if (skillPanel != null)
+            skillPanel.SetActive(false);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
+    }
+
+    private void UpdateSkillUI()
+    {
+        if (saveData == null)
+            return;
+
+        if (shieldSkillButton != null)
+            shieldSkillButton.interactable = saveData.shieldUnlocked;
+
+        if (dashSkillButton != null)
+            dashSkillButton.interactable = saveData.dashUnlocked;
+
+        if (shieldLockText != null)
+        {
+            shieldLockText.gameObject.SetActive(!saveData.shieldUnlocked);
+            shieldLockText.text = "쉬움 클리어 필요";
+        }
+
+        if (dashLockText != null)
+        {
+            dashLockText.gameObject.SetActive(!saveData.dashUnlocked);
+            dashLockText.text = "보통 클리어 필요";
+        }
+
+        UpdateSelectedSkillText();
+    }
+
+    private void SelectShieldSkill()
+    {
+        if (saveData == null || !saveData.shieldUnlocked)
+            return;
+
+        PlayerPrefs.SetString("SelectedSkill", "Shield");
+        PlayerPrefs.Save();
+
+        UpdateSelectedSkillText();
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
+
+        Debug.Log("보호막 스킬 선택됨");
+    }
+
+    private void SelectDashSkill()
+    {
+        if (saveData == null || !saveData.dashUnlocked)
+            return;
+
+        PlayerPrefs.SetString("SelectedSkill", "Dash");
+        PlayerPrefs.Save();
+
+        UpdateSelectedSkillText();
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySFX(SfxType.Click);
+
+        Debug.Log("대시 스킬 선택됨");
+    }
+
+    private void UpdateSelectedSkillText()
+    {
+        if (selectedSkillText == null)
+            return;
+
+        string selectedSkill = PlayerPrefs.GetString("SelectedSkill", "None");
+
+        if (selectedSkill == "Shield")
+            selectedSkillText.text = "선택된 스킬: 보호막";
+        else if (selectedSkill == "Dash")
+            selectedSkillText.text = "선택된 스킬: 대시";
+        else
+            selectedSkillText.text = "선택된 스킬: 없음";
     }
 }

@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     public Sprite[] walkSprites;
     public Sprite jumpSprite;
 
+    public float dashPower = 5f;
+
     public float frameTime = 0.15f;
 
     private Rigidbody2D rb;
@@ -108,6 +110,19 @@ public class PlayerController : MonoBehaviour
         if (isJumping && jumpSprite != null)
         {
             sr.sprite = jumpSprite;
+        }
+    }
+
+    public void Dash()
+    {
+        transform.position += Vector3.right * dashPower;
+    }
+
+    public void OnSkill()
+    {
+        if (SkillManager.Instance != null)
+        {
+            SkillManager.Instance.UseDash(this);
         }
     }
 }
