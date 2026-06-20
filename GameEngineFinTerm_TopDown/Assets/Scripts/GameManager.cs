@@ -8,6 +8,18 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    [Header("Clear UI")]
+    public GameObject clearPanel;
+    public TMP_Text clearTimeText;
+    public TMP_Text clearCoinText;
+    public Button stageSelectButton;
+
+    [Header("Fail UI")]
+    public GameObject failPanel;
+
+    public Button retryButton;
+    public Button failStageSelectButton;
+
     public TMP_Text timeText;
     public TMP_Text coinText;
     public TMP_Text startCountText;
@@ -38,6 +50,21 @@ public class GameManager : MonoBehaviour
         UpdateTimeUI();
 
         StartCoroutine(StartCountdown());
+
+        if (retryButton != null)
+        {
+            retryButton.onClick.AddListener(RetryStage);
+        }
+
+        if (failStageSelectButton != null)
+        {
+            failStageSelectButton.onClick.AddListener(GoToStageSelect);
+        }
+
+        if (failPanel != null)
+        {
+            failPanel.SetActive(false);
+        }
     }
 
     void Update()
@@ -68,6 +95,9 @@ public class GameManager : MonoBehaviour
 
     public void ClearStage()
     {
+        if (!isPlaying)
+            return;
+
         isPlaying = false;
 
         PlayerController player = FindObjectOfType<PlayerController>();
@@ -79,16 +109,16 @@ public class GameManager : MonoBehaviour
         CheckBestTime();
         SaveStageClear();
 
-        Time.timeScale = 0f;
-
-        Debug.Log("스테이지 클리어!");
-        Debug.Log("클리어 시간: " + playTime.ToString("F2") + "초");
-        Debug.Log("획득 코인: " + coinCount);
-
         if (SoundManager.Instance != null)
         {
             SoundManager.Instance.PlaySFX(SfxType.StageClear);
         }
+
+        ShowClearPanel();
+
+        Time.timeScale = 0f;
+
+        Debug.Log("스테이지 클리어!");
     }
 
     public void CheckBestTime()
@@ -156,18 +186,26 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDead()
     {
+        if (!isPlaying)
+            return;
+
         isPlaying = false;
 
-        Time.timeScale = 1f;                                                //
+        PlayerController player = FindObjectOfType<PlayerController>();
 
-        Debug.Log("플레이어 사망. 스테이지 재시작");
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (player != null)
+        {
+            player.SetCanMove(false);
+        }
 
         if (SoundManager.Instance != null)
         {
             SoundManager.Instance.PlaySFX(SfxType.StageFail);
         }
+
+        ShowFailPanel();
+
+        Time.timeScale = 0f;
     }
 
     public float GetPlayTime()
@@ -184,6 +222,47 @@ public class GameManager : MonoBehaviour
     public int GetCoinCount()
     {
         return coinCount;
+    }
+
+    public void GoToStageSelect()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("StageSelectScene");
+    }
+
+    private void ShowClearPanel()
+    {
+        if (clearPanel != null)
+        {
+            clearPanel.SetActive(true);
+        }
+
+        if (clearTimeText != null)
+        {
+            clearTimeText.text = "클리어 시간: " + playTime.ToString("F2") + "초";
+        }
+
+        if (clearCoinText != null)
+        {
+            clearCoinText.text = "획득 코인: " + coinCount;
+        }
+    }
+
+    private void ShowFailPanel()
+    {
+        if (failPanel != null)
+        {
+            failPanel.SetActive(true);
+        }
+    }
+
+    public void RetryStage()
+    {
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name
+        );
     }
 
     private IEnumerator StartCountdown()
@@ -224,5 +303,26 @@ public class GameManager : MonoBehaviour
         }
 
         canCountTime = true;
+    }
+
+    private IEnumerator RestartAfterFail()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+
+        if (player != null)
+        {
+            player.SetCanMove(false);
+        }
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxType.StageFail);
+        }
+
+        yield return new WaitForSeconds(0.8f);
+
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
