@@ -13,4 +13,6 @@ public class PlayerSaveData
 
     public bool shieldUnlocked = false;
     public bool dashUnlocked = false;
+
+    public string selectedSkill = "None";
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class PlayerController : MonoBehaviour
     public Sprite[] walkSprites;
     public Sprite jumpSprite;
 
-    public float dashPower = 5f;
+    public float dashDistance = 1f;
+    public float dashPower = 3f;
 
     public float frameTime = 0.15f;
 
@@ -59,6 +61,11 @@ public class PlayerController : MonoBehaviour
                 sr.sprite = jumpSprite;
 
             return;
+        }
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            UseSkill();
         }
 
         PlayWalkAnimation();
@@ -115,7 +122,7 @@ public class PlayerController : MonoBehaviour
 
     public void Dash()
     {
-        transform.position += Vector3.right * dashPower;
+        transform.position += Vector3.right * dashDistance;
     }
 
     public void OnSkill()
@@ -124,5 +131,13 @@ public class PlayerController : MonoBehaviour
         {
             SkillManager.Instance.UseDash(this);
         }
+    }
+
+    private void UseSkill()
+    {
+        if (SkillManager.Instance == null)
+            return;
+
+        SkillManager.Instance.UseDash(this);
     }
 }

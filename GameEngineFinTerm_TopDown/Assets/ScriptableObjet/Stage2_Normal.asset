@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51afd647de4e9e24eab6032896e5c9c6, type: 3}
   m_Name: Stage2_Normal
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
-  stageName: Stage 1 Easy
+  stageName: Stage 2 Normal
   stageNumber: 1
   coinCount: 20
   obstacleCount: 50

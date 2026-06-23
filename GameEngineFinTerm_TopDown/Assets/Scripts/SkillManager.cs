@@ -16,12 +16,33 @@ public class SkillManager : MonoBehaviour
     {
         string skillName = PlayerPrefs.GetString("SelectedSkill", "None");
 
-        if (skillName == "Shield")
-            selectedSkill = SkillType.Shield;
-        else if (skillName == "Dash")
-            selectedSkill = SkillType.Dash;
-        else
+        int currentStageNumber = 1;
+
+        if (GameManager.Instance != null)
+        {
+            currentStageNumber = GameManager.Instance.currentStageNumber;
+        }
+
+        if (currentStageNumber == 1)
+        {
             selectedSkill = SkillType.None;
+        }
+        else if (currentStageNumber == 2)
+        {
+            if (skillName == "Shield")
+                selectedSkill = SkillType.Shield;
+            else
+                selectedSkill = SkillType.None;
+        }
+        else if (currentStageNumber == 3)
+        {
+            if (skillName == "Shield")
+                selectedSkill = SkillType.Shield;
+            else if (skillName == "Dash")
+                selectedSkill = SkillType.Dash;
+            else
+                selectedSkill = SkillType.None;
+        }
     }
 
     public bool CanUseShield()
@@ -32,7 +53,11 @@ public class SkillManager : MonoBehaviour
     public void UseShield()
     {
         skillUsed = true;
-        Debug.Log("보호막 사용됨");
+
+        if (SkillUIManager.Instance != null)
+        {
+            SkillUIManager.Instance.UpdateSkillUI();
+        }
     }
 
     public void UseDash(PlayerController player)
@@ -45,7 +70,21 @@ public class SkillManager : MonoBehaviour
 
         skillUsed = true;
 
+        if (SkillUIManager.Instance != null)
+        {
+            SkillUIManager.Instance.UpdateSkillUI();
+        }
+
         player.Dash();
-        Debug.Log("대시 사용됨");
+    }
+
+    public bool IsSkillUsed()
+    {
+        return skillUsed;
+    }
+
+    public SkillType GetSelectedSkill()
+    {
+        return selectedSkill;
     }
 }

@@ -19,9 +19,10 @@ public class RankingManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        string currentPlayerName = PlayerPrefs.GetString("CurrentPlayerName", "");
+        string currentPlayerName =
+            PlayerPrefs.GetString("CurrentPlayerName", "");
 
-        if (nameInputField != null)
+        if (!string.IsNullOrEmpty(currentPlayerName))
         {
             nameInputField.text = currentPlayerName;
         }
